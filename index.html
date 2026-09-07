@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EmiSuuu</title></title>
+  <title>Meus Apps</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -30,11 +30,7 @@
       --shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.4);
     }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       font-family: 'Inter', system-ui, sans-serif;
@@ -53,11 +49,7 @@
       margin: 0 auto;
     }
 
-    .logo {
-      font-weight: 700;
-      font-size: 1.3rem;
-      letter-spacing: -0.5px;
-    }
+    .logo { font-weight: 700; font-size: 1.3rem; }
 
     .theme-toggle {
       background: var(--card-bg);
@@ -70,11 +62,6 @@
       align-items: center;
       justify-content: center;
       font-size: 1.2rem;
-      transition: all 0.2s;
-    }
-
-    .theme-toggle:hover {
-      transform: scale(1.05);
     }
 
     main {
@@ -83,16 +70,8 @@
       padding: 20px 24px 60px;
     }
 
-    /* ===== LISTA DE APPS ===== */
-    #apps-list h2 {
-      font-size: 1.6rem;
-      margin-bottom: 8px;
-    }
-
-    .subtitle {
-      color: var(--text-secondary);
-      margin-bottom: 32px;
-    }
+    #apps-list h2 { font-size: 1.6rem; margin-bottom: 8px; }
+    .subtitle { color: var(--text-secondary); margin-bottom: 32px; }
 
     .apps-grid {
       display: grid;
@@ -112,7 +91,6 @@
 
     .app-card:hover {
       transform: translateY(-6px);
-      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.15);
     }
 
     .app-icon {
@@ -128,23 +106,10 @@
       margin-bottom: 18px;
     }
 
-    .app-card h3 {
-      font-size: 1.2rem;
-      margin-bottom: 6px;
-    }
+    .app-card h3 { font-size: 1.2rem; margin-bottom: 6px; }
+    .app-card p { color: var(--text-secondary); font-size: 0.95rem; line-height: 1.5; }
 
-    .app-card p {
-      color: var(--text-secondary);
-      font-size: 0.95rem;
-      line-height: 1.5;
-    }
-
-    /* ===== PÁGINA DO APP ===== */
-    #app-detail {
-      display: none;
-      max-width: 480px;
-      margin: 0 auto;
-    }
+    #app-detail { display: none; max-width: 480px; margin: 0 auto; }
 
     .back-btn {
       background: none;
@@ -157,10 +122,6 @@
       display: flex;
       align-items: center;
       gap: 6px;
-    }
-
-    .back-btn:hover {
-      text-decoration: underline;
     }
 
     .detail-card {
@@ -183,13 +144,9 @@
       justify-content: center;
       font-size: 2.8rem;
       color: white;
-      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
     }
 
-    .detail-card h1 {
-      font-size: 1.8rem;
-      margin-bottom: 8px;
-    }
+    .detail-card h1 { font-size: 1.8rem; margin-bottom: 8px; }
 
     .version {
       display: inline-block;
@@ -206,6 +163,7 @@
       color: var(--text-secondary);
       line-height: 1.6;
       margin-bottom: 32px;
+      white-space: pre-wrap;
     }
 
     .download-btn {
@@ -220,7 +178,6 @@
       padding: 16px 36px;
       border-radius: 14px;
       transition: all 0.2s;
-      box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);
     }
 
     .download-btn:hover {
@@ -231,6 +188,12 @@
     .info {
       margin-top: 22px;
       font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .loading, .error {
+      text-align: center;
+      padding: 60px 20px;
       color: var(--text-secondary);
     }
 
@@ -245,7 +208,7 @@
 <body>
   <header>
     <div class="logo">Meus Apps</div>
-    <button class="theme-toggle" onclick="toggleTheme()" title="Alternar tema">
+    <button class="theme-toggle" onclick="toggleTheme()">
       <span id="theme-icon">🌙</span>
     </button>
   </header>
@@ -256,12 +219,12 @@
       <h2>Meus Aplicativos</h2>
       <p class="subtitle">Clique em um app para baixar</p>
 
-      <div class="apps-grid" id="apps-grid">
-        <!-- Os cards serão gerados pelo JavaScript -->
-      </div>
+      <div id="loading" class="loading">Carregando apps...</div>
+      <div id="error" class="error" style="display:none;"></div>
+      <div class="apps-grid" id="apps-grid" style="display:none;"></div>
     </section>
 
-    <!-- PÁGINA DE DETALHE DO APP -->
+    <!-- DETALHE DO APP -->
     <section id="app-detail">
       <button class="back-btn" onclick="showList()">← Voltar para a lista</button>
 
@@ -269,58 +232,88 @@
         <div class="detail-icon" id="detail-icon">📱</div>
         <h1 id="detail-name">Nome do App</h1>
         <div class="version" id="detail-version">v1.0.0</div>
-        <p class="description" id="detail-description">Descrição do app</p>
+        <p class="description" id="detail-description"></p>
         
         <a href="#" class="download-btn" id="detail-download" download>
           <span>⬇️</span> Baixar APK
         </a>
         
-        <div class="info" id="detail-info">Android 8.0+ • 00 MB</div>
+        <div class="info" id="detail-info"></div>
       </div>
     </section>
   </main>
 
-  <footer>
-    Feito com ❤️ • 2026
-  </footer>
+  <footer>Feito com ❤️ • 2026</footer>
 
   <script>
-    // ====================== DADOS DOS APPS ======================
-    // Aqui você edita os 3 apps
-    const apps = [
-      {
-        id: 1,
-        name: "App 1",
-        version: "v1.0.0",
-        description: "Descrição curta e clara do primeiro aplicativo. Explique o que ele faz.",
-        icon: "📱",
-        downloadUrl: "COLE_AQUI_O_LINK_DO_APK_1",
-        size: "25 MB",
-        android: "Android 8.0+"
-      },
-      {
-        id: 2,
-        name: "App 2",
-        version: "v1.2.0",
-        description: "Descrição do segundo aplicativo. Pode falar das principais funções.",
-        icon: "🎮",
-        downloadUrl: "COLE_AQUI_O_LINK_DO_APK_2",
-        size: "40 MB",
-        android: "Android 9.0+"
-      },
-      {
-        id: 3,
-        name: "App 3",
-        version: "v2.0.0",
-        description: "Descrição do terceiro aplicativo. Deixe atraente para o usuário baixar.",
-        icon: "🛠️",
-        downloadUrl: "COLE_AQUI_O_LINK_DO_APK_3",
-        size: "18 MB",
-        android: "Android 8.0+"
-      }
-    ];
+    // ================= CONFIGURAÇÃO =================
+    const GITHUB_USER = "emisuuugamer";
+    const GITHUB_REPO = "emisuuu-apps";
+    // ================================================
 
-    // ====================== FUNÇÕES ======================
+    let apps = [];
+
+    async function loadApps() {
+      const loading = document.getElementById('loading');
+      const errorDiv = document.getElementById('error');
+      const grid = document.getElementById('apps-grid');
+
+      try {
+        const response = await fetch(`https://api.github.com/repos/\( {GITHUB_USER}/ \){GITHUB_REPO}/releases`);
+        
+        if (!response.ok) {
+          throw new Error("Não foi possível carregar as releases");
+        }
+
+        const releases = await response.json();
+
+        // Filtra apenas releases que tenham arquivo .apk
+        apps = releases
+          .map(release => {
+            const apk = release.assets.find(asset => 
+              asset.name.toLowerCase().endsWith('.apk')
+            );
+
+            if (!apk) return null;
+
+            return {
+              id: release.id,
+              name: release.name || release.tag_name,
+              version: release.tag_name,
+              description: release.body || "Sem descrição disponível.",
+              downloadUrl: apk.browser_download_url,
+              size: formatSize(apk.size),
+              icon: "📱"
+            };
+          })
+          .filter(app => app !== null);
+
+        loading.style.display = 'none';
+
+        if (apps.length === 0) {
+          errorDiv.style.display = 'block';
+          errorDiv.textContent = "Nenhum app encontrado. Publique uma Release com arquivo .apk.";
+          return;
+        }
+
+        renderApps();
+        grid.style.display = 'grid';
+
+      } catch (err) {
+        loading.style.display = 'none';
+        errorDiv.style.display = 'block';
+        errorDiv.textContent = "Erro ao carregar os apps. Verifique se o repositório é público.";
+        console.error(err);
+      }
+    }
+
+    function formatSize(bytes) {
+      if (bytes < 1024 * 1024) {
+        return (bytes / 1024).toFixed(1) + " KB";
+      }
+      return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+    }
+
     function renderApps() {
       const grid = document.getElementById('apps-grid');
       grid.innerHTML = '';
@@ -329,10 +322,15 @@
         const card = document.createElement('div');
         card.className = 'app-card';
         card.onclick = () => showApp(app.id);
+
+        const shortDesc = app.description.length > 80 
+          ? app.description.substring(0, 80) + "..." 
+          : app.description;
+
         card.innerHTML = `
           <div class="app-icon">${app.icon}</div>
           <h3>${app.name}</h3>
-          <p>${app.description.substring(0, 80)}...</p>
+          <p>${shortDesc}</p>
         `;
         grid.appendChild(card);
       });
@@ -347,7 +345,7 @@
       document.getElementById('detail-version').textContent = app.version;
       document.getElementById('detail-description').textContent = app.description;
       document.getElementById('detail-download').href = app.downloadUrl;
-      document.getElementById('detail-info').textContent = `${app.android} • ${app.size}`;
+      document.getElementById('detail-info').textContent = `Tamanho: ${app.size}`;
 
       document.getElementById('apps-list').style.display = 'none';
       document.getElementById('app-detail').style.display = 'block';
@@ -380,8 +378,8 @@
       document.getElementById('theme-icon').textContent = '☀️';
     }
 
-    // Inicia a página
-    renderApps();
+    // Inicia
+    loadApps();
   </script>
 </body>
-</html>       
+          </html>
