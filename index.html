@@ -214,7 +214,6 @@
   </header>
 
   <main>
-    <!-- LISTA DE APPS -->
     <section id="apps-list">
       <h2>Meus Aplicativos</h2>
       <p class="subtitle">Clique em um app para baixar</p>
@@ -224,7 +223,6 @@
       <div class="apps-grid" id="apps-grid" style="display:none;"></div>
     </section>
 
-    <!-- DETALHE DO APP -->
     <section id="app-detail">
       <button class="back-btn" onclick="showList()">← Voltar para a lista</button>
 
@@ -246,10 +244,8 @@
   <footer>Feito com ❤️ • 2026</footer>
 
   <script>
-    // ================= CONFIGURAÇÃO =================
     const GITHUB_USER = "emisuuugamer";
     const GITHUB_REPO = "emisuuu-apps";
-    // ================================================
 
     let apps = [];
 
@@ -260,13 +256,13 @@
 
       try {
         const response = await fetch(`https://api.github.com/repos/\( {GITHUB_USER}/ \){GITHUB_REPO}/releases`);
+        
         if (!response.ok) {
           throw new Error("Não foi possível carregar as releases");
         }
 
         const releases = await response.json();
 
-        // Filtra apenas releases que tenham arquivo .apk
         apps = releases
           .map(release => {
             const apk = release.assets.find(asset => 
@@ -301,7 +297,7 @@
       } catch (err) {
         loading.style.display = 'none';
         errorDiv.style.display = 'block';
-        errorDiv.textContent = "Erro ao carregar os apps. Verifique se o repositório é público.";
+        errorDiv.textContent = "Erro: " + err.message;
         console.error(err);
       }
     }
@@ -370,15 +366,13 @@
       }
     }
 
-    // Carrega tema salvo
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'dark') {
       document.documentElement.setAttribute('data-theme', 'dark');
       document.getElementById('theme-icon').textContent = '☀️';
     }
 
-    // Inicia
     loadApps();
   </script>
 </body>
-          </html>
+</html>
