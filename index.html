@@ -384,24 +384,4 @@
     renderApps();
   </script>
 </body>
-</html>       icon.textContent = '🌙';
-        localStorage.setItem('theme', 'light');
-      } else {
-        html.setAttribute('data-theme', 'dark');
-        icon.textContent = '☀️';
-        localStorage.setItem('theme', 'dark');
-      }
-    }
-
-    // Carrega tema salvo
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') {
-      document.documentElement.setAttribute('data-theme', 'dark');
-      document.getElementById('theme-icon').textContent = '☀️';
-    }
-
-    // Inicia
-    loadApps();
-  </script>
-</body>
-</html>
+</html>       
