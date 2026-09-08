@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EmiSuuu</title>
+  <title>Meus Apps</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -196,6 +196,14 @@
       line-height: 1.6;
       margin-bottom: 32px;
       white-space: pre-wrap;
+      text-align: left;
+    }
+
+    .description img {
+      max-width: 100%;
+      border-radius: 12px;
+      display: block;
+      margin: 14px 0;
     }
 
     .download-btn {
@@ -270,7 +278,7 @@
 </head>
 <body>
   <header>
-    <div class="logo">EmiSuuu</div>
+    <div class="logo">Meus Apps</div>
     <button class="theme-toggle" onclick="toggleTheme()">
       <span id="theme-icon">🌙</span>
     </button>
@@ -278,8 +286,8 @@
 
   <main>
     <section id="apps-list">
-      <h2>Ferramentas</h2>
-      <p class="subtitle">Baixe ferramentas únicas para edição do Pes 2014 de psp!</p>
+      <h2>Meus Aplicativos</h2>
+      <p class="subtitle">Clique em um app para baixar</p>
 
       <div id="loading" class="loading">Carregando apps...</div>
       <div id="error" class="error" style="display:none;"></div>
@@ -392,6 +400,29 @@
       return (bytes / (1024 * 1024)).toFixed(1) + " MB";
     }
 
+    function escapeHtml(str) {
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+
+    // Converte a sintaxe markdown de imagem ![alt](url) em <img>, usada só na página de detalhe
+    function renderDescriptionHtml(text) {
+      let safe = escapeHtml(text);
+      safe = safe.replace(
+        /!\[([^\]]*)\]\((https?:\/\/[^\s)]+)\)/g,
+        '<img src="$2" alt="$1" loading="lazy">'
+      );
+      safe = safe.replace(/\n/g, '<br>');
+      return safe;
+    }
+
+    // Remove a sintaxe de imagem do texto usado nos cards da lista (não mostrar imagem ali)
+    function stripImagesFromText(text) {
+      return text.replace(/!\[[^\]]*\]\([^)]+\)/g, '').replace(/\n{2,}/g, '\n').trim();
+    }
+
     function renderApps() {
       const grid = document.getElementById('apps-grid');
       grid.innerHTML = '';
@@ -405,10 +436,11 @@
           ? `<img src="${app.iconUrl}" alt="${app.name}">`
           : '📱';
 
-        const isLong = app.description.length > DESC_LIMIT;
+        const previewText = stripImagesFromText(app.description) || "Sem descrição disponível.";
+        const isLong = previewText.length > DESC_LIMIT;
         const shortDesc = isLong
-          ? app.description.substring(0, DESC_LIMIT) + "..."
-          : app.description;
+          ? previewText.substring(0, DESC_LIMIT) + "..."
+          : previewText;
 
         card.innerHTML = `
           <div class="app-icon">${iconHtml}</div>
@@ -429,7 +461,7 @@
           readMoreBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             expanded = !expanded;
-            descText.textContent = expanded ? app.description : shortDesc;
+            descText.textContent = expanded ? previewText : shortDesc;
             readMoreBtn.textContent = expanded ? 'ler menos' : 'ler mais';
           });
         }
@@ -447,7 +479,7 @@
         : '📱';
       document.getElementById('detail-name').textContent = app.name;
       document.getElementById('detail-version').textContent = app.version;
-      document.getElementById('detail-description').textContent = app.description;
+      document.getElementById('detail-description').innerHTML = renderDescriptionHtml(app.description);
       document.getElementById('detail-download').href = app.downloadUrl;
       document.getElementById('detail-info').textContent = `Tamanho: ${app.size}`;
 
