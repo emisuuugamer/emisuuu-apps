@@ -253,6 +253,19 @@
       font-size: 0.85rem;
       color: var(--text-secondary);
     }
+
+    .youtube-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      transition: color 0.2s, transform 0.2s;
+    }
+
+    .youtube-link:hover {
+      color: #ff0000;
+      transform: scale(1.1);
+    }
   </style>
 </head>
 <body>
@@ -283,7 +296,7 @@
         <p class="description" id="detail-description"></p>
         
         <a href="#" class="download-btn" id="detail-download" download>
-          <span>⬇️</span> Baixar APK
+          Baixar APK
         </a>
 
         <div>
@@ -295,7 +308,13 @@
     </section>
   </main>
 
-  <footer>Feito com ❤️ • 2026</footer>
+  <footer>
+    <a href="https://youtube.com/@emisuuu?si=p3T-ClWPEhRHXA6y" target="_blank" rel="noopener noreferrer" class="youtube-link" aria-label="Canal do YouTube">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="currentColor">
+        <path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8ZM9.6 15.5V8.5l6.3 3.5-6.3 3.5Z"/>
+      </svg>
+    </a>
+  </footer>
 
   <script>
     const GITHUB_USER = "emisuuugamer";
