@@ -83,10 +83,13 @@
       background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: 20px;
-      padding: 28px 24px;
+      padding: 22px 20px;
       cursor: pointer;
       transition: all 0.25s;
       box-shadow: var(--shadow);
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
     }
 
     .app-card:hover {
@@ -94,20 +97,48 @@
     }
 
     .app-icon {
-      width: 64px;
-      height: 64px;
+      width: 56px;
+      height: 56px;
+      flex-shrink: 0;
       background: linear-gradient(135deg, #3b82f6, #8b5cf6);
       border-radius: 16px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.8rem;
+      font-size: 1.6rem;
       color: white;
-      margin-bottom: 18px;
+      overflow: hidden;
     }
 
-    .app-card h3 { font-size: 1.2rem; margin-bottom: 6px; }
-    .app-card p { color: var(--text-secondary); font-size: 0.95rem; line-height: 1.5; }
+    .app-icon img, .detail-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: inherit;
+    }
+
+    .app-info { min-width: 0; }
+
+    .app-card h3 {
+      font-size: 1.1rem;
+      margin-bottom: 4px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .app-card p {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .read-more {
+      color: var(--primary);
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
 
     #app-detail { display: none; max-width: 480px; margin: 0 auto; }
 
@@ -144,6 +175,7 @@
       justify-content: center;
       font-size: 2.8rem;
       color: white;
+      overflow: hidden;
     }
 
     .detail-card h1 { font-size: 1.8rem; margin-bottom: 8px; }
@@ -246,6 +278,7 @@
   <script>
     const GITHUB_USER = "emisuuugamer";
     const GITHUB_REPO = "emisuuu-apps";
+    const DESC_LIMIT = 70;
 
     let apps = [];
 
@@ -256,6 +289,7 @@
 
       try {
         const response = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/releases`);
+        
         if (!response.ok) {
           throw new Error("Não foi possível carregar as releases");
         }
@@ -270,6 +304,10 @@
 
             if (!apk) return null;
 
+            const iconAsset = release.assets.find(asset =>
+              /\.(png|jpg|jpeg|webp)$/i.test(asset.name)
+            );
+
             return {
               id: release.id,
               name: release.name || release.tag_name,
@@ -277,7 +315,7 @@
               description: release.body || "Sem descrição disponível.",
               downloadUrl: apk.browser_download_url,
               size: formatSize(apk.size),
-              icon: "📱"
+              iconUrl: iconAsset ? iconAsset.browser_download_url : null
             };
           })
           .filter(app => app !== null);
@@ -317,15 +355,39 @@
         card.className = 'app-card';
         card.onclick = () => showApp(app.id);
 
-        const shortDesc = app.description.length > 80 
-          ? app.description.substring(0, 80) + "..." 
+        const iconHtml = app.iconUrl
+          ? `<img src="${app.iconUrl}" alt="${app.name}">`
+          : '📱';
+
+        const isLong = app.description.length > DESC_LIMIT;
+        const shortDesc = isLong
+          ? app.description.substring(0, DESC_LIMIT) + "..."
           : app.description;
 
         card.innerHTML = `
-          <div class="app-icon">${app.icon}</div>
-          <h3>${app.name}</h3>
-          <p>${shortDesc}</p>
+          <div class="app-icon">${iconHtml}</div>
+          <div class="app-info">
+            <h3>${app.name}</h3>
+            <p>
+              <span class="desc-text">${shortDesc}</span>
+              ${isLong ? ' <span class="read-more">ler mais</span>' : ''}
+            </p>
+          </div>
         `;
+
+        if (isLong) {
+          const readMoreBtn = card.querySelector('.read-more');
+          const descText = card.querySelector('.desc-text');
+          let expanded = false;
+
+          readMoreBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            expanded = !expanded;
+            descText.textContent = expanded ? app.description : shortDesc;
+            readMoreBtn.textContent = expanded ? 'ler menos' : 'ler mais';
+          });
+        }
+
         grid.appendChild(card);
       });
     }
@@ -334,7 +396,9 @@
       const app = apps.find(a => a.id === id);
       if (!app) return;
 
-      document.getElementById('detail-icon').textContent = app.icon;
+      document.getElementById('detail-icon').innerHTML = app.iconUrl
+        ? `<img src="${app.iconUrl}" alt="${app.name}">`
+        : '📱';
       document.getElementById('detail-name').textContent = app.name;
       document.getElementById('detail-version').textContent = app.version;
       document.getElementById('detail-description').textContent = app.description;
