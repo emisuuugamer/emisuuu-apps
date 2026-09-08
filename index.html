@@ -223,6 +223,24 @@
       color: var(--text-secondary);
     }
 
+    .share-btn {
+      margin-top: 14px;
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      font-weight: 500;
+      padding: 10px 20px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .share-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
     .loading, .error {
       text-align: center;
       padding: 60px 20px;
@@ -267,6 +285,10 @@
         <a href="#" class="download-btn" id="detail-download" download>
           <span>⬇️</span> Baixar APK
         </a>
+
+        <div>
+          <button class="share-btn" onclick="shareApp()">🔗 Copiar link do app</button>
+        </div>
         
         <div class="info" id="detail-info"></div>
       </div>
@@ -331,6 +353,11 @@
         renderApps();
         grid.style.display = 'grid';
 
+        const requestedId = new URLSearchParams(window.location.search).get('app');
+        if (requestedId) {
+          showApp(Number(requestedId), false);
+        }
+
       } catch (err) {
         loading.style.display = 'none';
         errorDiv.style.display = 'block';
@@ -392,7 +419,7 @@
       });
     }
 
-    function showApp(id) {
+    function showApp(id, updateUrl = true) {
       const app = apps.find(a => a.id === id);
       if (!app) return;
 
@@ -407,12 +434,44 @@
 
       document.getElementById('apps-list').style.display = 'none';
       document.getElementById('app-detail').style.display = 'block';
+
+      if (updateUrl) {
+        const url = new URL(window.location);
+        url.searchParams.set('app', id);
+        history.pushState({ appId: id }, '', url);
+      }
     }
 
-    function showList() {
+    function showList(updateUrl = true) {
       document.getElementById('app-detail').style.display = 'none';
       document.getElementById('apps-list').style.display = 'block';
+
+      if (updateUrl) {
+        const url = new URL(window.location);
+        url.searchParams.delete('app');
+        history.pushState({}, '', url);
+      }
     }
+
+    function shareApp() {
+      const btn = document.querySelector('.share-btn');
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        const original = btn.textContent;
+        btn.textContent = '✅ Link copiado!';
+        setTimeout(() => { btn.textContent = original; }, 2000);
+      }).catch(() => {
+        prompt('Copie o link abaixo:', window.location.href);
+      });
+    }
+
+    window.addEventListener('popstate', () => {
+      const requestedId = new URLSearchParams(window.location.search).get('app');
+      if (requestedId) {
+        showApp(Number(requestedId), false);
+      } else {
+        showList(false);
+      }
+    });
 
     function toggleTheme() {
       const html = document.documentElement;
